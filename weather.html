@@ -1,0 +1,49 @@
+<html>
+<script src="vue.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.24.0/axios.min.js"></script>
+<body>
+<div id="app">
+    <input type="text" @keyup.enter="searchWeather" v-model.trim="message" > <button @click="searchWeather">搜索</button>
+    <p><span v-for="city in cities" @click="changeCity(city)">{{city}}&nbsp;&nbsp;</span></p>
+    <ul>
+        <li v-for="weather in weatherArr">{{weather.fxDate}}-{{weather.textDay}}-({{weather.tempMin}}~{{weather.tempMax}})</li>
+    </ul>
+</div>
+<script>
+    let app = new Vue({
+        el:'#app',
+        data:{
+            cities:['北京','上海','广州','深圳'],
+            message:'',
+            id:'',
+            key:'YOUR KEY',
+            weatherArr:[]
+        },
+        methods:{
+            changeCity(city){
+                this.message=city
+                this.searchWeather()
+            },
+            async searchWeather(){
+                let _self=this
+                await axios.get('https://geoapi.qweather.com/v2/city/lookup?location='+this.message+'&key='+this.key).then((response)=>{
+                    if(response.data.code=='200')
+                    {
+                        _self.id=response.data.location[0].id
+                    }
+
+                }).catch((err)=>{
+                    console.log(err)
+                })
+
+                await axios.get('https://devapi.qweather.com/v7/weather/3d?key='+this.key+'&location='+this.id).then((response)=>{
+                    _self.weatherArr=response.data.daily
+                }).catch((err)=>{
+                    console.log(err)
+                })
+            }
+        }
+    })
+</script>
+</body>
+</html>

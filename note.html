@@ -1,0 +1,34 @@
+<html>
+<script src="vue.js"></script>
+<body>
+<div id="app">
+    <input type="text" @keyup.enter="addNote()" v-model="message" >
+    <ul>
+        <li v-for="(note,index) in noteArr" @click="removeNote(index)">{{index+1}}-{{note}}</li>
+
+    </ul>
+    <p v-show="noteArr.length">总数:{{noteArr.length}} <input type="button" value="清空" @click="clear"></p>
+</div>
+<script>
+    let app = new Vue({
+        el:'#app',
+        data:{
+            noteArr:['学习','听歌'],
+            message:''
+        },
+        methods:{
+            removeNote(index){
+                this.noteArr.splice(index,1)
+            },
+            addNote(){
+                this.noteArr.push(this.message)
+                this.message=''
+            },
+            clear(){
+                this.noteArr=[]
+            }
+        }
+    })
+</script>
+</body>
+</html>
